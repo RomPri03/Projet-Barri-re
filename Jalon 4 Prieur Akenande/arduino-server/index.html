@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Arduino</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <header>Données Arduino en temps réel</header>
+
+    <div class="container">
+        <h2>État de la barrière</h2>
+        <p id="status" style="color: gray;">En attente de données...</p>
+    </div>
+
+    <script>
+        // Connexion au WebSocket
+        const socket = new WebSocket('ws://localhost:3000');
+
+        socket.onopen = () => {
+            console.log("Connecté au serveur WebSocket.");
+        };
+
+        socket.onmessage = (event) => {
+            console.log("Donnée reçue :", event.data);
+            const statusElement = document.getElementById("status");
+
+            if (event.data === "OUVERT") {
+                statusElement.textContent = "Barrière ouverte";
+                statusElement.style.color = "green";
+            } else if (event.data === "FERMÉ") {
+                statusElement.textContent = "Barrière fermée";
+                statusElement.style.color = "red";
+            } else {
+                statusElement.textContent = "Donnée inconnue";
+                statusElement.style.color = "gray";
+            }
+        };
+
+        socket.onerror = (error) => {
+            console.error("Erreur WebSocket :", error);
+        };
+
+        socket.onclose = () => {
+            console.log("Déconnecté du serveur WebSocket.");
+        };
+    </script>
+ <script src="server.js"></script>
+</body>
+</html>
+
+
+
